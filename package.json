@@ -1,0 +1,37 @@
+{
+  "name": "jquery-loading-button",
+  "version": "1.0.0",
+  "description": "jQuery plugin that shows a spinner on a clicked button and prevents double submits",
+  "keywords": [
+    "jquery",
+    "jquery-plugin",
+    "button",
+    "spinner",
+    "double-submit"
+  ],
+  "author": "Pablo Pazos",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ppazos/jquery-loading-button.git"
+  },
+  "main": "src/loading-button.js",
+  "jsdelivr": "src/loading-button.js",
+  "files": [
+    "src",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "playwright test",
+    "test:chromium": "playwright test --project='chromium*'"
+  },
+  "peerDependencies": {
+    "jquery": ">=3.4.1 <5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "jquery-3.4": "npm:jquery@3.4.1",
+    "jquery-3.7": "npm:jquery@3.7.1",
+    "jquery-4": "npm:jquery@4.0.0"
+  }
+}
