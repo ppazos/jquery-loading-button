@@ -9,6 +9,18 @@ The repository has two files:
 | `src/loading-button.js` | The plugin. You choose the buttons and call `.loading()` on them. | Always. |
 | `src/form-submit-guard.js` | Optional script that prevents double submits on every form of the page. | When you want forms protected without calling the plugin on each button. |
 
+## Demo
+
+Download or clone the repository and open `demo/index.html` in a browser:
+
+```bash
+git clone https://github.com/ppazos/jquery-loading-button.git
+cd jquery-loading-button
+xdg-open demo/index.html
+```
+
+There is nothing to install or start. The page uses the scripts in `src/`, and needs an Internet connection to get jQuery and Font Awesome from jsDelivr.
+
 ## Requirements
 
 - jQuery 3.4.1 or later, below 5. Tested with 3.4.1, 3.7.1 and 4.0.0.
@@ -172,6 +184,9 @@ npx playwright test --project=chromium-jquery-3.7 --headed --workers=1   # watch
 src/                          files that are published
   loading-button.js
   form-submit-guard.js
+demo/
+  index.html                  demo page, opens directly in a browser
+  sink.html                   receives the demo form submissions
 test/
   loading-button.spec.js      tests of the plugin
   form-submit-guard.spec.js   tests of the guard

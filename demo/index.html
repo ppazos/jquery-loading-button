@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jquery-loading-button demo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+  <style>
+    :root { color-scheme: light dark; }
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 46rem; margin: 0 auto; padding: 1rem; }
+    section { border: 1px solid #8886; border-radius: .5rem; padding: 0 1rem 1rem; margin: 1rem 0; }
+    h2 { margin-top: 2rem; }
+    h3 { margin-bottom: .25rem; }
+    input[type="text"], button, input[type="submit"] { font: inherit; padding: .35rem .75rem; margin: 0 .5rem .5rem 0; }
+    code { background: #8882; padding: 0 .25rem; border-radius: .2rem; }
+    .counter { font-weight: bold; }
+    .reset { font-size: .85rem; }
+    #error { display: none; border: 2px solid #c00; padding: .5rem 1rem; }
+  </style>
+</head>
+<body>
+  <h1>jquery-loading-button demo</h1>
+
+  <p id="error">The scripts did not load. This page needs an Internet connection to get jQuery from jsDelivr,
+    and the <code>src/</code> folder of the repository next to the <code>demo/</code> folder.</p>
+
+  <p>Click each button several times, as an impatient user would. The counter shows how many requests
+    the page would have sent. The forms submit to a hidden frame that never answers back, so the page behaves
+    like it is waiting for a slow server. Use <em>Reset</em> to try again.</p>
+
+  <h2>Without protection</h2>
+
+  <section class="demo">
+    <h3>A plain form</h3>
+    <p>Every click sends a request.</p>
+    <form action="sink.html" target="sink" data-no-submit-guard>
+      <button type="submit">Pay</button>
+    </form>
+  </section>
+
+  <h2>Plugin: <code>loading-button.js</code></h2>
+  <p>These forms opt out of the guard, so only the plugin acts on them.</p>
+
+  <section class="demo">
+    <h3>Spinner on click</h3>
+    <p><code>$(button).loading()</code>. Click several times, then focus the field and press Enter:
+      only one request is sent.</p>
+    <form action="sink.html" target="sink" data-no-submit-guard>
+      <input type="text" name="amount" value="100">
+      <button type="submit" class="with-plugin">Pay</button>
+    </form>
+  </section>
+
+  <section class="demo">
+    <h3>Form validation</h3>
+    <p>With the field empty, <em>Send</em> shows the browser message and no spinner.
+      <em>Save draft</em> has <code>formnovalidate</code>, so it submits anyway.</p>
+    <form action="sink.html" target="sink" data-no-submit-guard>
+      <input type="text" name="email" placeholder="Required field" required>
+      <button type="submit" class="with-plugin">Send</button>
+      <button type="submit" class="with-plugin" formnovalidate>Save draft</button>
+    </form>
+  </section>
+
+  <section class="demo">
+    <h3>AJAX request</h3>
+    <p>The page stays, so the code calls <code>loading('stop')</code> when the request ends (2 seconds here).</p>
+    <form class="ajax" data-no-submit-guard>
+      <button type="submit" class="with-plugin">Search</button>
+    </form>
+  </section>
+
+  <section class="demo">
+    <h3>Start and stop from code</h3>
+    <p><code>loading('start')</code> and <code>loading('stop')</code>.</p>
+    <button type="button" id="target">Target button</button>
+    <br>
+    <button type="button" class="call" data-method="start">Start</button>
+    <button type="button" class="call" data-method="stop">Stop</button>
+  </section>
+
+  <h2>Guard: <code>form-submit-guard.js</code></h2>
+  <p>No JavaScript is needed for these forms: including the script is enough.</p>
+
+  <section class="demo">
+    <h3>Protected form</h3>
+    <p>Click several times, or press Enter in the field: only one request is sent.</p>
+    <form action="sink.html" target="sink">
+      <input type="text" name="name" value="Ada">
+      <button type="submit">Create</button>
+    </form>
+  </section>
+
+  <section class="demo">
+    <h3>Submit cancelled by the page</h3>
+    <p>While the box is checked, the page cancels the submit and the form stays usable.</p>
+    <form class="cancellable" action="sink.html" target="sink">
+      <label><input type="checkbox" class="fail" checked> Fail the page validation</label>
+      <br>
+      <button type="submit">Continue</button>
+    </form>
+  </section>
+
+  <section class="demo">
+    <h3>Button outside the form</h3>
+    <p>A button linked with the <code>form</code> attribute is protected too.</p>
+    <form id="outside" action="sink.html" target="sink"></form>
+    <button type="submit" form="outside">Update</button>
+  </section>
+
+  <section class="demo">
+    <h3>Opted out form</h3>
+    <p>Forms with <code>data-no-submit-guard</code>, such as file downloads, are not locked.</p>
+    <form action="sink.html" target="sink" data-no-submit-guard>
+      <button type="submit">Download</button>
+    </form>
+  </section>
+
+  <iframe name="sink" hidden></iframe>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="../src/loading-button.js"></script>
+  <script src="../src/form-submit-guard.js"></script>
+  <script>
+    if (!window.jQuery || !jQuery.fn.loading) {
+      document.getElementById('error').style.display = 'block';
+    }
+
+    $(function() {
+      function count(section) {
+        var counter = section.find('.counter');
+        counter.text(Number(counter.text()) + 1);
+      }
+
+      // wires one demo box, also after it is reset
+      function setup(section) {
+        section.find('.with-plugin').loading();
+      }
+
+      $('.demo').each(function() {
+        var section = $(this);
+        var original = section.html();
+        var footer = '<p>Requests sent: <span class="counter">0</span> ' +
+                     '<button type="button" class="reset">Reset</button></p>';
+
+        // the "start and stop" box sends nothing
+        if (section.find('form').length === 0) footer = '';
+
+        section.append(footer);
+        setup(section);
+
+        section.on('click', '.reset', function() {
+          section.html(original + footer);
+          setup(section);
+        });
+      });
+
+      $(document).on('submit', 'form.ajax', function(e) {
+        e.preventDefault();
+
+        var form = $(this);
+        count(form.closest('.demo'));
+
+        // pretends to be a request that takes 2 seconds
+        setTimeout(function() {
+          form.find('button').loading('stop');
+        }, 2000);
+      });
+
+      // bound to the section, so it runs before the guard
+      $('.demo').on('submit', 'form.cancellable', function(e) {
+        if ($(this).find('.fail').is(':checked')) e.preventDefault();
+      });
+
+      $('.demo').on('click', '.call', function() {
+        $('#target').loading($(this).data('method'));
+      });
+
+      // runs after the page and the guard: a submit that nobody cancelled is sent to the server
+      window.addEventListener('submit', function(e) {
+        if (!e.defaultPrevented) count($(e.target).closest('.demo'));
+      });
+    });
+  </script>
+</body>
+</html>
